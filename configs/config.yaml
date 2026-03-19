@@ -1,0 +1,60 @@
+# ============================================================
+# LLM Alpha HSI — Master Configuration
+# ============================================================
+
+# Data paths
+data:
+  prices_path: "data/processed/prices.csv"
+  volumes_path: "data/processed/volumes.csv"
+  sentiment_scores_path: "data/processed/sentiment_scores.csv"
+  features_path: "data/processed/features.csv"
+  signals_path: "data/processed/signals.csv"
+  hsi_returns_path: "data/processed/hsi_returns.csv"
+
+# Sentiment scoring (GPT-4 pipeline)
+sentiment:
+  model: "gpt-4-turbo-preview"
+  max_tokens: 1024
+  temperature: 0.1
+  chunk_size: 3000
+  chunk_overlap: 200
+  max_chunks_per_doc: 6
+  retry_attempts: 3
+  retry_delay: 5
+  rate_limit_delay: 1.0
+
+# Model training
+model:
+  min_train_quarters: 8        # Minimum quarters before first OOS fold
+  test_quarters: 1             # Quarters per OOS test window
+  hpo_trials: 50               # Optuna trials per fold
+  model_dir: "models/"
+
+  # XGBoost fixed params (starting point; Optuna tunes all)
+  xgb_defaults:
+    n_estimators: 300
+    max_depth: 5
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_weight: 3
+    gamma: 0.1
+    reg_alpha: 0.1
+    reg_lambda: 1.0
+    random_state: 42
+
+# Backtesting
+backtest:
+  initial_cash: 10_000_000      # HKD 10 million
+  commission_bps: 15            # 15 bps per leg
+  max_long_positions: 10
+  max_short_positions: 10
+  rebalance_frequency: "monthly"
+
+# Output
+output_dir: "results/"
+
+# Logging
+logging:
+  level: "INFO"
+  log_file: "logs/pipeline.log"
